@@ -1,0 +1,51 @@
+{
+  "name": "@paybyrd/logger-js",
+  "version": "1.0.0",
+  "description": "JS logger implementation",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paybyrd/paybyrd-logger-js.git"
+  },
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "./dist/index.cjs",
+  "umd:main": "./dist/index.umd.js",
+  "module": "./dist/index.module.js",
+  "unpkg": "./dist/index.umd.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.module.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.umd.js"
+    }
+  },
+  "scripts": {
+    "build": "microbundle",
+    "start": "microbundle watch"
+  },
+  "keywords": [
+    "log",
+    "logger",
+    "service",
+    "paybyrd"
+  ],
+  "author": "tiago.resende@paybyrd.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/paybyrd/paybyrd-logger-js/issues"
+  },
+  "homepage": "https://github.com/paybyrd/paybyrd-logger-js#readme",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "microbundle": "^0.15.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3"
+  }
+}
