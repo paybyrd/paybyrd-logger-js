@@ -5,6 +5,7 @@ export interface ILog {
     correlationId: string;
     level: LogLevel;
     message: string;
-    content?: object;
-    error?: object;
+    content?: object | null | undefined;
+    error?: Error | null | undefined;
+    elapsedTimeInMilliseconds?: number | null | undefined;
 }
