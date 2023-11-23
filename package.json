@@ -13,10 +13,14 @@
   "module": "./dist/index.module.js",
   "unpkg": "./dist/index.umd.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.module.js",
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.umd.js"
+  },
   "scripts": {
     "build": "microbundle",
-    "start": "microbundle watch",
-    "samples": "live-server --open=./samples"
+    "start": "microbundle watch"
   },
   "keywords": [
     "log",
