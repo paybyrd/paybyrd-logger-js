@@ -1,9 +1,3 @@
-import { ConsoleLogger } from "./ConsoleLogger";
-import { RestLogger } from "./RestLogger";
-
-export {
-    ConsoleLogger,
-    RestLogger
-};
-
-export default RestLogger;
+export { ConsoleLogger } from "./ConsoleLogger";
+export { RestLogger } from "./RestLogger";
+export { ILog, ILogger, LogLevel, IRestLoggerOptions } from "./abstractions";
