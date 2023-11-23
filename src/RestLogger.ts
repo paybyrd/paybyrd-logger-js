@@ -14,8 +14,15 @@ interface IFullLog {
     level: LogLevel;
     customMessage: string;
     message: string;
-    content?: object;
-    exeption?: object;
+    content: object | null | undefined;
+    exeption: IException | null | undefined;
+    elapsedTimeInMilliseconds: number | null | undefined;
+}
+
+interface IException {
+    className: string;
+    stackTrace?: string;
+    message: string;
 }
 
 export class RestLogger implements ILogger {
@@ -40,20 +47,24 @@ export class RestLogger implements ILogger {
             return;
         }
 
+        let message = `[${this._options.service.name}] ${log.message}`;
+        if (log.elapsedTimeInMilliseconds) {
+            message = `${message} in ${log.elapsedTimeInMilliseconds}ms`;
+        }
+
         this._logs.unshift({
             customMessage: log.message,
-            message: `[${this._options.service.name}] ${log.message}`,
+            message,
             service: this._options.service,
             environment: this._options.environment || 'Development',
             executionDate: new Date(),
             entrypoint: 'Execute',
             method: log.method,
             correlationId: log.correlationId,
-            content: {
-                ...log.content,
-                error: log.error?.toString()
-            },
-            level: log.level
+            content: log.content,
+            exeption: RestLogger.getException(log.error),
+            level: log.level,
+            elapsedTimeInMilliseconds: log.elapsedTimeInMilliseconds
         });
     }
 
@@ -105,5 +116,17 @@ export class RestLogger implements ILogger {
                 level: LogLevel.Error
             });
         }
+    }
+
+    static getException(error: Error | null | undefined) : IException | null {
+        if (!error) {
+            return null;
+        }
+
+        return {
+            stackTrace: error.stack,
+            message: error.message,
+            className: error.name
+        };
     }
 }
