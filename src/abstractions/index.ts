@@ -1,11 +1,4 @@
-import { IRestLoggerOptions } from "./IRestLoggerOptions";
-import { ILog } from "./ILog";
-import { ILogger } from "./ILogger";
-import { LogLevel } from "./LogLevel";
-
-export {
-    ILog,
-    ILogger,
-    IRestLoggerOptions,
-    LogLevel
-};
+export { IRestLoggerOptions } from "./IRestLoggerOptions";
+export { ILog } from "./ILog";
+export { ILogger } from "./ILogger";
+export { LogLevel } from "./LogLevel";
