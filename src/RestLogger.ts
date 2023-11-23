@@ -23,7 +23,7 @@ export class RestLogger implements ILogger {
     private readonly _logger: ILogger;
     private readonly _options: IRestLoggerOptions;
     private _logs: Array<IFullLog> = [];
-    private _interval: any;
+    private _interval: NodeJS.Timer;
 
     constructor(options: IRestLoggerOptions,
         logger: ILogger = new ConsoleLogger()) {
