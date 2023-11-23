@@ -1,0 +1,4 @@
+﻿variables:
+  - name: artifact_name
+    value: 'logger-js'
+  - group: npm
