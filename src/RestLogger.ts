@@ -44,6 +44,13 @@ export class RestLogger implements ILogger {
 
         if (!this._options.restLoggerUrl)
         {
+            this._logger.log({
+                message: 'RestLoggerUrl is not defined',
+                content: log,
+                method: 'log',
+                correlationId: log.correlationId,
+                level: LogLevel.Warning
+            });
             return;
         }
 
