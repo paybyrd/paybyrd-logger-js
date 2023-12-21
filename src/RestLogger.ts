@@ -54,7 +54,7 @@ export class RestLogger implements ILogger {
         }
 
         if (this._options.minimumLevel
-            && log.level >= this._options.minimumLevel) {
+            && log.level < this._options.minimumLevel) {
             return this._logger.log({
                 message: 'Minimum level not achieved for sending',
                 content: {
@@ -73,25 +73,44 @@ export class RestLogger implements ILogger {
         });
     }
 
-    async flush(): Promise<void> {
+    async flush(correlationId = crypto.randomUUID()): Promise<void> {
         clearInterval(this._interval);
-        while (this._logs.length) {
-            await this.sendBatch();
+        try
+        {
+            while (this._logs.length) {
+                await this.sendBatch(correlationId);
+            }
         }
-        this._interval = setInterval(this.sendBatch.bind(this), (this._options.batchLogIntervalInSeconds || RestLogger.DEFAULT_BATCH_TIMEOUT) * 1000);
+        catch (error) {
+            this._logger.log({
+                error: error,
+                message: 'Error sending messages to API',
+                method: 'flush',
+                correlationId,
+                level: LogLevel.Error
+            });
+        } finally {
+            this._interval = setInterval(this.sendBatch.bind(this), (this._options.batchLogIntervalInSeconds || RestLogger.DEFAULT_BATCH_TIMEOUT) * 1000);
+        }
     }
 
-    async sendBatch(): Promise<void> {
+    async sendBatch(correlationId = crypto.randomUUID()): Promise<void> {
+        this._logger.log({
+            message: `Start SendBatch`,
+            method: 'sendBatch',
+            correlationId: correlationId,
+            level: LogLevel.Debug
+        });
+
         const items = this._logs.splice(0, 10);
         if (!items.length) {
             return;
-        }
-        const correlationId = crypto.randomUUID();
+        }        
         try {
             const timeout = (this._options.timeoutInSeconds || 30) * 1000;
             const abortController = new AbortController();
             const timeoutId = setTimeout(() => abortController.abort(), timeout);
-            const response = await fetch(this._options.restLoggerUrl, {
+            const request = {
                 headers: {
                     'content-type': 'application/json'
                 },
@@ -99,8 +118,23 @@ export class RestLogger implements ILogger {
                 keepalive: true,
                 body: JSON.stringify(items.map(i => this.getFullLog(i))),
                 signal: abortController.signal
+            };
+            const url = new URL(this._options.restLoggerUrl);
+            this._logger.log({
+                message: `ExternalService - Request (${url.hostname})`,
+                content: items,
+                method: 'sendBatch',
+                correlationId: correlationId,
+                level: LogLevel.Debug
             });
+            const response = await fetch(this._options.restLoggerUrl, request);
             clearTimeout(timeoutId);
+            this._logger.log({
+                message: `ExternalService - Response (${url.hostname})`,
+                method: 'sendBatch',
+                correlationId: correlationId,
+                level: LogLevel.Debug
+            });
 
             if (!response.ok) {
                 this._logger.log({
