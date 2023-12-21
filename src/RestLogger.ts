@@ -54,7 +54,7 @@ export class RestLogger implements ILogger {
         }
 
         if (this._options.minimumLevel
-            && log.level >= this._options.minimumLevel) {
+            && log.level < this._options.minimumLevel) {
             return this._logger.log({
                 message: 'Minimum level not achieved for sending',
                 content: {
