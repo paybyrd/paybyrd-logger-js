@@ -1,5 +1,6 @@
 import {IRestLoggerOptions, ILog, ILogger, LogLevel} from "./abstractions";
 import {ConsoleLogger} from "./ConsoleLogger";
+import { v4 as uuidV4 } from "uuid";
 
 interface IFullLog {
     service: {
@@ -73,7 +74,7 @@ export class RestLogger implements ILogger {
         });
     }
 
-    async flush(correlationId = crypto.randomUUID()): Promise<void> {
+    async flush(correlationId = uuidV4()): Promise<void> {
         clearInterval(this._interval);
         try
         {
@@ -94,7 +95,7 @@ export class RestLogger implements ILogger {
         }
     }
 
-    async sendBatch(correlationId = crypto.randomUUID()): Promise<void> {
+    async sendBatch(correlationId = uuidV4()): Promise<void> {
         this._logger.log({
             message: `Start SendBatch`,
             method: 'sendBatch',
