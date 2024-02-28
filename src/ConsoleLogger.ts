@@ -6,24 +6,18 @@ export class ConsoleLogger implements ILogger {
     }
 
     log(log: ILog): void {
-        const errorLog = {
-            ...log,
-            error: log.error?.toString()
-        };
-
         switch (log.level) {
             case LogLevel.Trace:
-                return console.trace(errorLog);
+                return console.trace(log);
             case LogLevel.Debug:
-                return console.debug(errorLog);
+                return console.debug(log);
             case LogLevel.Warning:
-                return console.warn(errorLog);
+                return console.warn(log);
             case LogLevel.Error:
             case LogLevel.Critical:
-                return console.error(errorLog);
+                return console.error(log);
             default:
-                return console.log(errorLog);
+                return console.log(log);
         }
     }
-
 }

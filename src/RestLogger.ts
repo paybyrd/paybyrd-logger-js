@@ -111,19 +111,20 @@ export class RestLogger implements ILogger {
             const timeout = (this._options.timeoutInSeconds || 30) * 1000;
             const abortController = new AbortController();
             const timeoutId = setTimeout(() => abortController.abort(), timeout);
+            const fullItems = items.map(i => this.getFullLog(i));
             const request = {
                 headers: {
                     'content-type': 'application/json'
                 },
                 method: 'POST',
                 keepalive: true,
-                body: JSON.stringify(items.map(i => this.getFullLog(i))),
+                body: JSON.stringify(fullItems),
                 signal: abortController.signal
             };
             const url = new URL(this._options.restLoggerUrl);
             this._logger.log({
                 message: `ExternalService - Request (${url.hostname})`,
-                content: items,
+                content: fullItems,
                 method: 'sendBatch',
                 correlationId: correlationId,
                 level: LogLevel.Debug
@@ -163,11 +164,18 @@ export class RestLogger implements ILogger {
             return null;
         }
 
-        return {
-            stackTrace: error.stack,
-            message: error.message,
-            className: error.name
-        };
+        try {
+            return {
+                stackTrace: error.stack,
+                message: error.message,
+                className: error.name
+            };
+        } catch {
+            return {
+                message: JSON.stringify(error),
+                className: 'Error'
+            };
+        }
     }
 
     private getFullLog({executionDate, log}: { executionDate: Date, log: ILog }): IFullLog {
